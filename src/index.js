@@ -1,7 +1,10 @@
 import './styles.css';
+import '@pnotify/core/dist/BrightTheme.css';
+import '@pnotify/core/dist/PNotify.css';
 import makeCardMarkup from './templates/card.hbs';
 import fetchCountries from "./js/fetchCountries";
 import getRefs from './js/refs';
+import { alert, notice, error } from '@pnotify/core';
 
 const debounce = require('lodash.debounce');
 
@@ -14,16 +17,25 @@ refs.btn.addEventListener('click', onBtnClick );
 function renderCards(country) {
     const markup = makeCardMarkup(country);
     
-    // if (country.length < 11) {
-    //     refs.container.innerHTML = markup;
-    // } else { alert("Введите более конкретное название") }
-    
-    refs.container.innerHTML = markup;
+    if (country.length < 11) {
+        refs.container.innerHTML = markup;
+    } else {
+        notice({
+        text: `Найдено ${country.length} стран, введите более конкретно `,
+        delay: 1500
+        })
+    }
 }
  
 
 function fetchAndRender() {
-    fetchCountries(`${searchText}`).then(renderCards).catch(console.log);
+    fetchCountries(`${searchText}`).then(renderCards).catch(() => {
+        if (refs.searchForm.elements.query.value == "") { return }
+        error({
+        text: "Неверно введено название! Попробуйте ещё раз!",
+        delay: 2000,
+        });
+    });
  }
 
 
@@ -37,7 +49,13 @@ function onInputChange(e) {
 function onBtnClick(e) {
     e.preventDefault();
     searchText = refs.searchForm.elements.query.value;
-    if (searchText === '') {alert('Введите название страны'); }
+    if (searchText === '') {
+        alert({
+        text: "Введите страну",
+        type: 'info',
+        delay: 3000
+        });
+    }
     fetchAndRender();
  }
  
