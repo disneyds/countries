@@ -102,6 +102,7 @@ button {
   background-color: rgba(0, 0, 0, 0.801);
   color: aliceblue;
   border-radius: 4px;
+  margin-right: 20px;
 }
 button:hover,
 button:focus {
